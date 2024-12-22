@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import chatGPTService from '../services/api/chatGPTService';
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState([]);
@@ -29,20 +30,30 @@ const ChatInterface = () => {
     setInputMessage('');
     setIsTyping(true);
 
-    // Placeholder for API call
     try {
+      // Get response from ChatGPT
+      const response = await chatGPTService.sendMessage(inputMessage, messages);
+      
       const botMessage = {
         id: Date.now() + 1,
-        text: 'This is a placeholder response. ChatGPT API integration pending.',
+        text: response,
         sender: 'bot',
         timestamp: new Date().toISOString()
       };
-      setTimeout(() => {
-        setMessages(prev => [...prev, botMessage]);
-        setIsTyping(false);
-      }, 1000);
+
+      setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Error:', error);
+      // Add error message to chat
+      const errorMessage = {
+        id: Date.now() + 1,
+        text: 'I apologize, but I encountered an error. Please try again.',
+        sender: 'bot',
+        timestamp: new Date().toISOString(),
+        isError: true
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
     }
   };
@@ -59,6 +70,8 @@ const ChatInterface = () => {
               className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl p-3 rounded-lg ${
                 message.sender === 'user'
                   ? 'bg-blue-500 text-white'
+                  : message.isError
+                  ? 'bg-red-100 text-red-800'
                   : 'bg-white text-gray-800'
               }`}
             >
@@ -89,7 +102,10 @@ const ChatInterface = () => {
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
+            disabled={isTyping}
+            className={`px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none ${
+              isTyping ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
             Send
           </button>
