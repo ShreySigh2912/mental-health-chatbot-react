@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/mental-health-chatbot-react/static/css/main.2665a63f.css",
+    "main.js": "/mental-health-chatbot-react/static/js/main.89086ab3.js",
+    "index.html": "/mental-health-chatbot-react/index.html",
+    "main.2665a63f.css.map": "/mental-health-chatbot-react/static/css/main.2665a63f.css.map",
+    "main.89086ab3.js.map": "/mental-health-chatbot-react/static/js/main.89086ab3.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2665a63f.css",
+    "static/js/main.89086ab3.js"
+  ]
+}

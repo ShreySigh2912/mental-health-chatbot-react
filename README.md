@@ -1,1 +1,0 @@
-# Mental Health Chatbot\n\nA React-based mental health chatbot.
