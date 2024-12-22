@@ -13,7 +13,16 @@ const ChatInterface = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+    // Add initial greeting
+    if (messages.length === 0) {
+      setMessages([{
+        id: Date.now(),
+        text: 'Hello! I\'m here to listen and support you. While I\'m not a replacement for professional help, I\'m happy to chat and provide resources when needed. How are you feeling today?',
+        sender: 'bot',
+        timestamp: new Date().toISOString()
+      }]);
+    }
+  }, [messages.length]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -31,8 +40,9 @@ const ChatInterface = () => {
     setIsTyping(true);
 
     try {
-      // Get response from ChatGPT
+      console.log('Sending message to API...');
       const response = await chatGPTService.sendMessage(inputMessage, messages);
+      console.log('Received response:', response);
       
       const botMessage = {
         id: Date.now() + 1,
@@ -43,11 +53,10 @@ const ChatInterface = () => {
 
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      console.error('Error:', error);
-      // Add error message to chat
+      console.error('Chat Error:', error);
       const errorMessage = {
         id: Date.now() + 1,
-        text: 'I apologize, but I encountered an error. Please try again.',
+        text: error.message || 'I apologize, but I encountered an error. Please try again.',
         sender: 'bot',
         timestamp: new Date().toISOString(),
         isError: true
@@ -75,8 +84,8 @@ const ChatInterface = () => {
                   : 'bg-white text-gray-800'
               }`}
             >
-              <p>{message.text}</p>
-              <span className="text-xs opacity-75">
+              <p className="whitespace-pre-wrap">{message.text}</p>
+              <span className="text-xs opacity-75 block mt-2">
                 {new Date(message.timestamp).toLocaleTimeString()}
               </span>
             </div>
@@ -99,12 +108,13 @@ const ChatInterface = () => {
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder="Type your message..."
             className="flex-1 p-2 border rounded-lg focus:outline-none focus:border-blue-500"
+            disabled={isTyping}
           />
           <button
             type="submit"
-            disabled={isTyping}
+            disabled={isTyping || !inputMessage.trim()}
             className={`px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none ${
-              isTyping ? 'opacity-50 cursor-not-allowed' : ''
+              (isTyping || !inputMessage.trim()) ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             Send
