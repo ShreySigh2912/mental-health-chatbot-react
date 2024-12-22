@@ -21,16 +21,31 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Debug Environment
+        run: |
+          echo "Checking environment setup..."
+          echo "Node version: $(node -v)"
+          echo "NPM version: $(npm -v)"
+          echo "Checking if .env file will be created..."
+
       - name: Create env file
         run: |
           touch .env
-          echo REACT_APP_TOGETHER_API_KEY=${{ secrets.REACT_APP_TOGETHER_API_KEY }} >> .env
+          echo "REACT_APP_TOGETHER_API_KEY=${{ secrets.REACT_APP_TOGETHER_API_KEY }}" >> .env
+          echo "Env file created successfully"
+          echo "Checking if API key is set (length only):"
+          echo "API key length: ${#REACT_APP_TOGETHER_API_KEY}"
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm install
+          echo "Dependencies installed successfully"
 
       - name: Build
-        run: npm run build
+        run: |
+          echo "Starting build process..."
+          npm run build
+          echo "Build completed successfully"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
